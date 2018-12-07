@@ -5,7 +5,7 @@ module median_sorting(clk, reset, d_en, data_in, data_out);
 input clk, reset;
 input [s-1:0] data_in;
 input d_en;
-output reg [71:0] data_out;
+output reg [7:0] data_out;
 
 reg [s-1:0] reg_in [n-1 :0]; //Input registers
 reg [s-1:0] reg_out [n-1:0]; // Output registers
@@ -22,17 +22,17 @@ integer i,j;
    always @ (posedge clk) begin
      if(reset) begin
        for(i=0; i<n; i=i+1)
-         reg_out[i] <= 8'd0;
-         addr_in <= 8'd0;
-         addr_out <= 8'd0;
-         data_out <= 8'd0;
+         reg_out[i] <= 8'b0;
+         addr_in <= 8'b0;
+         addr_out <= 8'b0;
+         data_out <= 8'b0;
          d_sort <= 1'b0;
-         sort_count <= 8'd0;
+         sort_count <= 8'b0;
        end
        else if (!d_en)begin
          reg_in[addr_in] <= data_in;
          addr_in <= addr_in + 1'b1;
-         addr_out <= 8'd0;
+         addr_out <= 8'b0;
        end
        else if (!d_en)begin
          
@@ -58,7 +58,7 @@ integer i,j;
        if(d_sort) begin
          data_out <= reg_out[addr_out];
          addr_out <= addr_out + 1'b1;
-         addr_in <= 8'd0;
+         addr_in <= 8'b0;
        end
    end
 endmodule
