@@ -1,0 +1,137 @@
+	always@(posedge clk)
+	begin
+		if (reset)
+		begin
+			j <= 0;
+			r_en <= 0;
+			flag <= 0;
+			k <= 0;
+			read <= 0;
+			win <= 0;
+			ready_mf <= 0;
+		end
+		else if ((ready_tx == 1) && (i > j) && (wr_done == 1) && (select == 0)) //IT
+		begin
+			if(flag == 0)
+			begin
+			j <= 0;
+			r_en <= 1;
+			flag <= 1;
+			end
+			else
+			begin
+			flag <= flag;
+			j <= j + 1;
+			r_en <= 1;
+			end
+	   end
+		else if ((ready_tx == 1) && (i > k) && (wr_done == 1) && (select == 1))//MF 
+		begin
+			if(read == 0)
+			begin
+			case(win) // select address
+			win0 : 
+			begin
+				r_en <= 1;
+				j <= k;
+				win <= win1;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win1 : 
+			begin
+				r_en <= 1;
+				w0 <= data_out_ram;
+				j <= k+1;
+				win <= win2;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win2 : 
+			begin
+				r_en <= 1;
+				w1 <= data_out_ram;
+				j <= k-1;
+				win <= win3;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win3 : 
+			begin
+				r_en <= 1;
+				w2 <= data_out_ram;
+				j <= k-size;
+				win <= win4;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win4 : 
+			begin
+				r_en <= 1;
+				w3 <= data_out_ram;
+				j <= k-size+1;
+				win <= win5;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win5 : 
+			begin
+				r_en <= 1;
+				w4 <= data_out_ram;
+				j <= k-size-1;
+				win <= win6;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win6 : 
+			begin
+				r_en <= 1;
+				w5 <= data_out_ram;
+				j <= k+size;
+				win <= win7;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win7 : 
+			begin
+				r_en <= 1;
+				w6 <= data_out_ram;
+				j <= k+size+1;
+				win <= win8;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win8 : 
+			begin
+				r_en <= 1;
+				w7 <= data_out_ram;
+				j <= k+size-1;
+				win <= win9;
+				read <= 0;
+				ready_mf <= 0;
+			end
+			win9 : 
+			begin
+				r_en <= 1;
+				w8 <= data_out_ram;
+				win <= w0;
+				read <= 1;
+				ready_mf <= 0;
+			end
+			endcase
+			end else begin//read == 0
+			median <= sort_median; //median is ready
+			ready_mf <= 1;
+			k <= k + 1;
+			read <= 0;
+			win <= w0;
+			end
+		end
+		else
+		begin		
+			j <= j;
+			r_en <= 0;
+			k <= k;			
+			ready_mf <= 0;
+		end
+	end
